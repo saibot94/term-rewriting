@@ -1,4 +1,4 @@
-## Term-rewriting
+# Term-rewriting
 
 By Cristian Schuszter.
 
