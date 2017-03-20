@@ -1,4 +1,4 @@
-package functions
+package com.cristis.functions
 
 import com.cristis.functions.Language
 import org.scalatest.{Matchers, WordSpec}
