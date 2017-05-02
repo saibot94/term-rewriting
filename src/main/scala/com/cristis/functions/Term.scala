@@ -39,6 +39,17 @@ abstract class Term {
       case Variable(_) | Constant(_) => throw new IllegalArgumentException("Invalid position")
     }
   }
+
+  def vars: Set[Variable] = {
+    pos().map { p =>
+      this.subterm(p) match {
+        case s: Variable => s
+        case _ => null
+      }
+    }.filterNot(p => p == null)
+  }
+
+  def ground: Boolean = vars.isEmpty
 }
 
 

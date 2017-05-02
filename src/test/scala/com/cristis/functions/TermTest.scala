@@ -101,4 +101,19 @@ class TermTest extends WordSpec with Matchers {
       }
     }
   }
+
+  "Term.vars" when {
+    "finding the vars in a constant function" should {
+      "return the empty set" in {
+        Fct("f", List(Constant("e"), Constant("e"))).vars shouldBe Set()
+      }
+      "return the single var" in {
+        Fct("f", List(Fct("i", List(Variable("x"))), Constant("e"))).vars shouldBe Set(Variable("x"))
+      }
+      "return multiple vars" in {
+        Fct("f", List(Fct("i", List(Variable("x"), Variable("y"))), Fct("i", List(Variable("y"))))).vars shouldBe
+            Set(Variable("x"), Variable("y"))
+      }
+    }
+  }
 }
