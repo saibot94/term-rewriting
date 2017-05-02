@@ -1,13 +1,42 @@
 package com.cristis.functions
 
+import scala.annotation.tailrec
+
 /**
   * Created by darkg on 3/28/2017.
   */
 abstract class Term {
-  def name: String
+  def symbol: String
+
+  def pos(prev: String = ""): Set[String] = {
+    this match {
+      case Constant(_) => Set(prev)
+      case Variable(_) => Set(prev)
+      case Fct(_, children) => children.zipWithIndex.map(s => (s._1, s._2 + 1)).map { case (c, i) =>
+        Set(prev) | c.pos(prev + i.toString)
+      }.reduceLeft((a, b) => a | b)
+    }
+  }
+
+  def size: Int = pos().size
+
+  @tailrec
+  final def subterm(p: String): Term = p match {
+    case "" => this
+    case str => this match {
+      case Fct(_, children) => children(str.take(1).toInt - 1).subterm(str.tail)
+      case Variable(_) | Constant(_) => throw new IllegalArgumentException("Invalid position")
+    }
+  }
 }
 
 
-case class Fct(name: String, label: Array[Int], children: Array[Term]) extends Term { }
-case class Constant(name: String) extends Term{ }
-case class Variable(name: String) extends Term{ }
+case class Fct(symbol: String, children: List[Term]) extends Term {}
+
+case class Constant(symbol: String) extends Term {}
+
+case class Variable(symbol: String) extends Term {}
+
+class TermBuilder(expr: String, lang: Language) {
+
+}

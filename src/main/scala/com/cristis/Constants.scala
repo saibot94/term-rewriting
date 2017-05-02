@@ -20,4 +20,5 @@ object Constants {
   val ValidVariableRegex: Regex = "^[a-z]+".r
   val AllExceptLettersAndNumbersRegex: Regex = "[^a-zA-Z0-9]".r
   def clearScreen(): Unit =  print("\033[2J")
+  val Epsilon: List[Int] = List()
 }
