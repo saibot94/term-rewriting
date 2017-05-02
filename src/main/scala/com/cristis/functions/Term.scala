@@ -28,6 +28,17 @@ abstract class Term {
       case Variable(_) | Constant(_) => throw new IllegalArgumentException("Invalid position")
     }
   }
+
+  def replace(position: String, t: Term): Term = position match {
+    case "" => t
+    case str => this match {
+      case Fct(symbol, children) =>
+        val childPos = str.take(1).toInt - 1
+        val toChange = children(childPos)
+        Fct(symbol, children.take(childPos) ++ List(toChange.replace(str.tail, t)) ++ children.drop(childPos + 1))
+      case Variable(_) | Constant(_) => throw new IllegalArgumentException("Invalid position")
+    }
+  }
 }
 
 

@@ -6,6 +6,8 @@ import org.scalatest.{Matchers, WordSpec}
   * Created by darkg on 5/2/2017.
   */
 class TermTest extends WordSpec with Matchers {
+  val testBookTerm = Fct("f", List(Constant("e"),
+        Fct("f", List(Variable("x"), Fct("i", List(Variable("x")))))))
   "Term.pos" when {
     "getting the position of a symbol" should {
       "return empty string set for variable or constant" in {
@@ -34,7 +36,7 @@ class TermTest extends WordSpec with Matchers {
       }
 
       "return more" in {
-        Fct("f",List(Variable("x"), Variable("y"))).size shouldBe 3
+        Fct("f", List(Variable("x"), Variable("y"))).size shouldBe 3
 
         Fct("f",
           List(Constant("e"),
@@ -43,13 +45,7 @@ class TermTest extends WordSpec with Matchers {
       }
 
       "verify equality " in {
-
-        Fct("f",
-          List(Constant("e"),
-            Fct("f", List(Variable("x"), Fct("i", List(Variable("x"))))))) shouldBe
-          Fct("f",
-            List(Constant("e"),
-              Fct("f", List(Variable("x"), Fct("i", List(Variable("x")))))))
+        testBookTerm shouldBe testBookTerm
       }
     }
   }
@@ -62,7 +58,7 @@ class TermTest extends WordSpec with Matchers {
     }
     "getting the term from a specific position" should {
       "get that term" in {
-        Fct("f",List(Variable("x"), Variable("y"))).subterm("1") shouldBe Variable("x")
+        Fct("f", List(Variable("x"), Variable("y"))).subterm("1") shouldBe Variable("x")
       }
 
       "get the more complicated terms" in {
@@ -74,6 +70,34 @@ class TermTest extends WordSpec with Matchers {
         expr.subterm("221") shouldBe Variable("x")
         expr.subterm("1") shouldBe Constant("e")
         expr.subterm("") shouldBe expr
+      }
+    }
+  }
+
+  "Term.replace" when {
+    "replacing epsilon pos" should {
+      "replace whole term" in {
+        val toReplace = Fct("f", List(Variable("b"), Variable("a")))
+        Variable("x").replace("", toReplace) shouldBe toReplace
+      }
+      "replace whole term in bigger expression" in {
+        val toReplace = Fct("f", List(Variable("b"), Variable("a")))
+        val added = Fct("f", List(Variable("bla")))
+        val expected = Fct("f", List(added, Variable("a")))
+
+        toReplace.replace("1", added) shouldBe expected
+      }
+
+      "replace in larger exp" in {
+        val added = Fct("f", List(Variable("a"), Constant("b")))
+        val testBookTermExpected = Fct("f", List(Constant("e"),
+          Fct("f", List(Variable("x"), Fct("i", List(added))))))
+
+        testBookTerm.replace("221", added) shouldBe testBookTermExpected
+      }
+
+      "trim larger tree" in {
+        testBookTerm.replace("2", Constant("e")) shouldBe Fct("f", List(Constant("e"), Constant("e")))
       }
     }
   }
