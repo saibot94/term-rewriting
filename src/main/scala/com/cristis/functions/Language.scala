@@ -1,5 +1,7 @@
 package com.cristis.functions
 
+import com.cristis.Constants
+
 /**
   * Created by cristian.schuszter on 2017-03-20.
   */
@@ -21,11 +23,17 @@ class Language(constants: List[String], functions: List[(String, Int)]) {
           false
         }
       case None =>
-        val splitCmdLine = cmdLine.split(",")
-        if (splitCmdLine.nonEmpty && splitCmdLine.forall(s => constants.contains(s))) {
-          true
-        } else {
-          false
+        val trimmed = cmdLine.trim
+        Constants.AllExceptLettersAndNumbersRegex.findFirstMatchIn(trimmed) match {
+          case Some(s) => println(s)
+            false
+          case None =>
+            val splitCmdLine = trimmed.split(",")
+            if (splitCmdLine.nonEmpty && splitCmdLine.forall(s => constants.contains(s) || LangUtils.validVariableSymbol(s))) {
+              true
+            } else {
+              false
+            }
         }
     }
   }

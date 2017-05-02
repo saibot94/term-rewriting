@@ -1,6 +1,5 @@
 package com.cristis.functions
 
-import com.cristis.functions.Language
 import org.scalatest.{Matchers, WordSpec}
 
 /**
@@ -24,10 +23,10 @@ class LanguageTest extends WordSpec with Matchers {
         lang.validateInput("asdasd asd as gfdg ad as") shouldBe false
       }
     }
-    "validating thing without paranthesis" should {
-      "return false" in {
+    "validating simple term" should {
+      "return true" in {
         val lang = new Language(constants, testFunctions)
-        lang.validateInput("asd") shouldBe false
+        lang.validateInput("asd") shouldBe true
       }
     }
     "validating thing without matching paranthesis" should {
@@ -48,6 +47,10 @@ class LanguageTest extends WordSpec with Matchers {
 
       "return true for simple expression " in {
         lang.validateInput("g(0) ".replaceAll(" ", "")) shouldBe true
+      }
+
+      "return false for non-valid variable symbol" in {
+        lang.validateInput("g(a0&) ".replaceAll(" ", "")) shouldBe false
       }
 
       "return true for more advanced expression" in {

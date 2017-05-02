@@ -17,5 +17,7 @@ object Constants {
     " the arity!!"
   val FunctionsRegex: Regex = "^[0-9a-zA-Z]+\\/[1-9]$".r
 
+  val ValidVariableRegex: Regex = "^[a-z]+".r
+  val AllExceptLettersAndNumbersRegex: Regex = "[^a-zA-Z0-9]".r
   def clearScreen(): Unit =  print("\033[2J")
 }
