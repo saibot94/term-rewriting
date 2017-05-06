@@ -1,3 +1,11 @@
 .idea
 *~
 target
+/bin/
+
+# related to eclipse
+.cache-main
+.cache-tests
+.classpath
+.settings
+.project
