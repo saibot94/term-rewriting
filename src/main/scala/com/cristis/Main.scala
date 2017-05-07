@@ -12,7 +12,6 @@ object Main {
     mainLoop()
   }
 
-
   def mainLoop(): Unit = {
     // Constants phase
     val constantsPrompt = new ConsolePrompter(ConstantsPrompt, ConstantsInvalidMessage, ConstantsRegex)
@@ -32,12 +31,12 @@ object Main {
     println(s"The following function symbols have been entered: ${functions.mkString(" | ")}")
     println("Enter a valid expression in the language that you've defined above." +
       "\nExample: f(g(1,2), 0)\n******")
-    while(true) {
+    while (true) {
       print(">> ")
       Console.flush
       val language = new Language(constants, functionsMapped)
       val input = StdIn.readLine().replaceAll(" ", "")
-      if(language.validateInput(input)) {
+      if (language.validateInput(input)) {
         println("The expression was valid!")
       } else {
         println("ERROR: Could not validate the expression!")
