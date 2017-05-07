@@ -1,13 +1,13 @@
 package com.cristis.functions
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{ Matchers, WordSpec }
 
 /**
-  * Created by darkg on 5/2/2017.
-  */
+ * Created by darkg on 5/2/2017.
+ */
 class TermTest extends WordSpec with Matchers {
   val testBookTerm = Fct("f", List(Constant("e"),
-        Fct("f", List(Variable("x"), Fct("i", List(Variable("x")))))))
+    Fct("f", List(Variable("x"), Fct("i", List(Variable("x")))))))
   "Term.pos" when {
     "getting the position of a symbol" should {
       "return empty string set for variable or constant" in {
@@ -108,11 +108,29 @@ class TermTest extends WordSpec with Matchers {
         Fct("f", List(Constant("e"), Constant("e"))).vars shouldBe Set()
       }
       "return the single var" in {
-        Fct("f", List(Fct("i", List(Variable("x"))), Constant("e"))).vars shouldBe Set(Variable("x"))
+        Fct("f", List(Fct("i", List(Variable("x"))), Constant("e"))).vars.map(_._1).toSet shouldBe Set(Variable("x"))
       }
       "return multiple vars" in {
-        Fct("f", List(Fct("i", List(Variable("x"), Variable("y"))), Fct("i", List(Variable("y"))))).vars shouldBe
-            Set(Variable("x"), Variable("y"))
+        Fct("f", List(Fct("i", List(Variable("x"), Variable("y"))), Fct("i", List(Variable("y"))))).vars.map(_._1).toSet shouldBe
+          Set(Variable("x"), Variable("y"))
+      }
+    }
+  }
+
+  "Term.parallel" when {
+    "checking equalities" should {
+      "return true for equal terms" in {
+        val first = Fct("f", List(Constant("x"), Variable("y")))
+        val second = first.copy(first.symbol, first.children)
+        first.same(second) shouldBe true
+
+      }
+
+      "return false for non-equals" in {
+        val first = Fct("f", List(Constant("x"), Variable("y")))
+        val second = first.copy(first.symbol, List(Constant("e")))
+        first.same(second) shouldBe false
+
       }
     }
   }

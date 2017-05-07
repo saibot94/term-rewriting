@@ -3,17 +3,20 @@ package com.cristis.functions
 import scala.annotation.tailrec
 
 /**
-  * Created by darkg on 3/28/2017.
-  */
+ * Created by darkg on 3/28/2017.
+ */
 abstract class Term {
+  type Identity = (Term, Term)
+
   def symbol: String
 
   def pos(prev: String = ""): Set[String] = {
     this match {
       case Constant(_) => Set(prev)
       case Variable(_) => Set(prev)
-      case Fct(_, children) => children.zipWithIndex.map(s => (s._1, s._2 + 1)).map { case (c, i) =>
-        Set(prev) | c.pos(prev + i.toString)
+      case Fct(_, children) => children.zipWithIndex.map(s => (s._1, s._2 + 1)).map {
+        case (c, i) =>
+          Set(prev) | c.pos(prev + i.toString)
       }.reduceLeft((a, b) => a | b)
     }
   }
@@ -40,18 +43,19 @@ abstract class Term {
     }
   }
 
-  def vars: Set[Variable] = {
+  def vars: Set[(Variable, String)] = {
     pos().map { p =>
       this.subterm(p) match {
-        case s: Variable => s
+        case s: Variable => (s, p)
         case _ => null
       }
-    }.filterNot(p => p == null)
+    }.filterNot(v => v == null)
   }
 
   def ground: Boolean = vars.isEmpty
-}
 
+  def same(other: Term): Boolean = this == other
+}
 
 case class Fct(symbol: String, children: List[Term]) extends Term {}
 
