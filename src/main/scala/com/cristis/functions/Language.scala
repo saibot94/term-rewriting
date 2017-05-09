@@ -3,8 +3,8 @@ package com.cristis.functions
 import com.cristis.Constants
 
 /**
-  * Created by cristian.schuszter on 2017-03-20.
-  */
+ * Created by cristian.schuszter on 2017-03-20.
+ */
 class Language(constants: List[String], functions: List[(String, Int)]) {
 
   def validateInput(cmdLine: String): Boolean = {
@@ -25,7 +25,8 @@ class Language(constants: List[String], functions: List[(String, Int)]) {
       case None =>
         val trimmed = cmdLine.trim
         Constants.AllExceptLettersAndNumbersRegex.findFirstMatchIn(trimmed) match {
-          case Some(s) => println(s)
+          case Some(s) =>
+            println(s)
             false
           case None =>
             val splitCmdLine = trimmed.split(",")
@@ -45,15 +46,16 @@ class Language(constants: List[String], functions: List[(String, Int)]) {
       List(cmd)
     } else {
       var res: List[String] = Nil
-      cmd.zipWithIndex.foreach { case (chr, index) =>
-        if (chr == '(') {
-          level += 1
-        } else if (chr == ')') {
-          level -= 1
-        } else if (level == 0 && chr == ',') {
-          res = res :+ cmd.substring(if (previousCommaIndex == 0) previousCommaIndex else previousCommaIndex + 1, index)
-          previousCommaIndex = index
-        }
+      cmd.zipWithIndex.foreach {
+        case (chr, index) =>
+          if (chr == '(') {
+            level += 1
+          } else if (chr == ')') {
+            level -= 1
+          } else if (level == 0 && chr == ',') {
+            res = res :+ cmd.substring(if (previousCommaIndex == 0) previousCommaIndex else previousCommaIndex + 1, index)
+            previousCommaIndex = index
+          }
       }
       res :+ cmd.substring(if (previousCommaIndex == 0) previousCommaIndex else previousCommaIndex + 1)
     }

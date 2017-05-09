@@ -12,8 +12,8 @@ abstract class Term {
 
   def pos(prev: String = ""): Set[String] = {
     this match {
-      case Constant(_) => Set(prev)
-      case Variable(_) => Set(prev)
+      case Var(_) => Set(prev)
+      case Fct(_, Nil) => Set(prev)
       case Fct(_, children) => children.zipWithIndex.map(s => (s._1, s._2 + 1)).map {
         case (c, i) =>
           Set(prev) | c.pos(prev + i.toString)
@@ -27,26 +27,29 @@ abstract class Term {
   final def subterm(p: String): Term = p match {
     case "" => this
     case str => this match {
+      case Var(_) => throw new IllegalArgumentException("Invalid position")
+      case Fct(_, Nil) => throw new IllegalArgumentException("Invalid position")
       case Fct(_, children) => children(str.take(1).toInt - 1).subterm(str.tail)
-      case Variable(_) | Constant(_) => throw new IllegalArgumentException("Invalid position")
+
     }
   }
 
   def replace(position: String, t: Term): Term = position match {
     case "" => t
     case str => this match {
+      case Fct(_, Nil) => throw new IllegalArgumentException("Invalid position")
+      case Var(_) => throw new IllegalArgumentException("Invalid position")
       case Fct(symbol, children) =>
         val childPos = str.take(1).toInt - 1
         val toChange = children(childPos)
         Fct(symbol, children.take(childPos) ++ List(toChange.replace(str.tail, t)) ++ children.drop(childPos + 1))
-      case Variable(_) | Constant(_) => throw new IllegalArgumentException("Invalid position")
     }
   }
 
-  def vars: Set[(Variable, String)] = {
+  def vars: Set[(Var, String)] = {
     pos().map { p =>
       this.subterm(p) match {
-        case s: Variable => (s, p)
+        case s: Var => (s, p)
         case _ => null
       }
     }.filterNot(v => v == null)
@@ -55,14 +58,15 @@ abstract class Term {
   def ground: Boolean = vars.isEmpty
 
   def same(other: Term): Boolean = this == other
+
+  def occurs(x: Var): Boolean = this match {
+    case Var(y) => x.symbol == y
+    case Fct(_, ts) => ts.exists(t => t.occurs(x))
+  }
 }
 
-case class Fct(symbol: String, children: List[Term]) extends Term {}
-
-case class Constant(symbol: String) extends Term {}
-
-case class Variable(symbol: String) extends Term {}
-
+case class Fct(symbol: String, children: List[Term] = List()) extends Term
+case class Var(symbol: String) extends Term
 class TermBuilder(expr: String, lang: Language) {
 
 }

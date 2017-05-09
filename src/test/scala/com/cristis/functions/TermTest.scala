@@ -6,23 +6,23 @@ import org.scalatest.{ Matchers, WordSpec }
  * Created by darkg on 5/2/2017.
  */
 class TermTest extends WordSpec with Matchers {
-  val testBookTerm = Fct("f", List(Constant("e"),
-    Fct("f", List(Variable("x"), Fct("i", List(Variable("x")))))))
+  val testBookTerm = Fct("f", List(Fct("e"),
+    Fct("f", List(Var("x"), Fct("i", List(Var("x")))))))
   "Term.pos" when {
     "getting the position of a symbol" should {
       "return empty string set for variable or constant" in {
-        Variable("x").pos() shouldBe Set("")
-        Constant("x").pos() shouldBe Set("")
+        Var("x").pos() shouldBe Set("")
+        Fct("x").pos() shouldBe Set("")
       }
 
       "return symbols for correct expression" in {
-        Fct("f", List(Variable("x"), Variable("y"))).pos() shouldBe Set("", "1", "2")
+        Fct("f", List(Var("x"), Var("y"))).pos() shouldBe Set("", "1", "2")
       }
 
       "return symbols for larger correct expression " in {
         Fct("f",
-          List(Constant("e"),
-            Fct("f", List(Variable("x"), Fct("i", List(Variable("x"))))))).pos() shouldBe Set("", "1", "2", "21", "22", "221")
+          List(Fct("e"),
+            Fct("f", List(Var("x"), Fct("i", List(Var("x"))))))).pos() shouldBe Set("", "1", "2", "21", "22", "221")
       }
     }
 
@@ -31,16 +31,16 @@ class TermTest extends WordSpec with Matchers {
   "Term.size" when {
     "getting the size of the position set" should {
       "return 1" in {
-        Variable(1.toString).size shouldBe 1
-        Constant(1.toString).size shouldBe 1
+        Var(1.toString).size shouldBe 1
+        Fct(1.toString).size shouldBe 1
       }
 
       "return more" in {
-        Fct("f", List(Variable("x"), Variable("y"))).size shouldBe 3
+        Fct("f", List(Var("x"), Var("y"))).size shouldBe 3
 
         Fct("f",
-          List(Constant("e"),
-            Fct("f", List(Variable("x"), Fct("i", List(Variable("x"))))))).size shouldBe 6
+          List(Fct("e"),
+            Fct("f", List(Var("x"), Fct("i", List(Var("x"))))))).size shouldBe 6
 
       }
 
@@ -53,22 +53,22 @@ class TermTest extends WordSpec with Matchers {
   "Term.subterm" when {
     "getting the empty subterm of anything" should {
       "yield that" in {
-        Variable("x").subterm("") shouldBe Variable("x")
+        Var("x").subterm("") shouldBe Var("x")
       }
     }
     "getting the term from a specific position" should {
       "get that term" in {
-        Fct("f", List(Variable("x"), Variable("y"))).subterm("1") shouldBe Variable("x")
+        Fct("f", List(Var("x"), Var("y"))).subterm("1") shouldBe Var("x")
       }
 
       "get the more complicated terms" in {
         val expr = Fct("f",
-          List(Constant("e"),
-            Fct("f", List(Variable("x"), Fct("i", List(Variable("x")))))))
+          List(Fct("e"),
+            Fct("f", List(Var("x"), Fct("i", List(Var("x")))))))
 
-        expr.subterm("22") shouldBe Fct("i", List(Variable("x")))
-        expr.subterm("221") shouldBe Variable("x")
-        expr.subterm("1") shouldBe Constant("e")
+        expr.subterm("22") shouldBe Fct("i", List(Var("x")))
+        expr.subterm("221") shouldBe Var("x")
+        expr.subterm("1") shouldBe Fct("e")
         expr.subterm("") shouldBe expr
       }
     }
@@ -77,27 +77,27 @@ class TermTest extends WordSpec with Matchers {
   "Term.replace" when {
     "replacing epsilon pos" should {
       "replace whole term" in {
-        val toReplace = Fct("f", List(Variable("b"), Variable("a")))
-        Variable("x").replace("", toReplace) shouldBe toReplace
+        val toReplace = Fct("f", List(Var("b"), Var("a")))
+        Var("x").replace("", toReplace) shouldBe toReplace
       }
       "replace whole term in bigger expression" in {
-        val toReplace = Fct("f", List(Variable("b"), Variable("a")))
-        val added = Fct("f", List(Variable("bla")))
-        val expected = Fct("f", List(added, Variable("a")))
+        val toReplace = Fct("f", List(Var("b"), Var("a")))
+        val added = Fct("f", List(Var("bla")))
+        val expected = Fct("f", List(added, Var("a")))
 
         toReplace.replace("1", added) shouldBe expected
       }
 
       "replace in larger exp" in {
-        val added = Fct("f", List(Variable("a"), Constant("b")))
-        val testBookTermExpected = Fct("f", List(Constant("e"),
-          Fct("f", List(Variable("x"), Fct("i", List(added))))))
+        val added = Fct("f", List(Var("a"), Fct("b")))
+        val testBookTermExpected = Fct("f", List(Fct("e"),
+          Fct("f", List(Var("x"), Fct("i", List(added))))))
 
         testBookTerm.replace("221", added) shouldBe testBookTermExpected
       }
 
       "trim larger tree" in {
-        testBookTerm.replace("2", Constant("e")) shouldBe Fct("f", List(Constant("e"), Constant("e")))
+        testBookTerm.replace("2", Fct("e")) shouldBe Fct("f", List(Fct("e"), Fct("e")))
       }
     }
   }
@@ -105,14 +105,14 @@ class TermTest extends WordSpec with Matchers {
   "Term.vars" when {
     "finding the vars in a constant function" should {
       "return the empty set" in {
-        Fct("f", List(Constant("e"), Constant("e"))).vars shouldBe Set()
+        Fct("f", List(Fct("e"), Fct("e"))).vars shouldBe Set()
       }
       "return the single var" in {
-        Fct("f", List(Fct("i", List(Variable("x"))), Constant("e"))).vars.map(_._1).toSet shouldBe Set(Variable("x"))
+        Fct("f", List(Fct("i", List(Var("x"))), Fct("e"))).vars.map(_._1).toSet shouldBe Set(Var("x"))
       }
       "return multiple vars" in {
-        Fct("f", List(Fct("i", List(Variable("x"), Variable("y"))), Fct("i", List(Variable("y"))))).vars.map(_._1).toSet shouldBe
-          Set(Variable("x"), Variable("y"))
+        Fct("f", List(Fct("i", List(Var("x"), Var("y"))), Fct("i", List(Var("y"))))).vars.map(_._1).toSet shouldBe
+          Set(Var("x"), Var("y"))
       }
     }
   }
@@ -120,15 +120,15 @@ class TermTest extends WordSpec with Matchers {
   "Term.parallel" when {
     "checking equalities" should {
       "return true for equal terms" in {
-        val first = Fct("f", List(Constant("x"), Variable("y")))
+        val first = Fct("f", List(Fct("x"), Var("y")))
         val second = first.copy(first.symbol, first.children)
         first.same(second) shouldBe true
 
       }
 
       "return false for non-equals" in {
-        val first = Fct("f", List(Constant("x"), Variable("y")))
-        val second = first.copy(first.symbol, List(Constant("e")))
+        val first = Fct("f", List(Fct("x"), Var("y")))
+        val second = first.copy(first.symbol, List(Fct("e")))
         first.same(second) shouldBe false
 
       }
