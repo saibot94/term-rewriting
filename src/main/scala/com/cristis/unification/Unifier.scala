@@ -8,7 +8,7 @@ import scala.annotation.tailrec
 /**
   * Created by darkg on 5/9/2017.
   */
-object Unificator {
+object Unifier {
 
   @tailrec
   private final def solve(ts: List[(Term, Term)], s: Substitution): Substitution = ts match {
@@ -30,6 +30,13 @@ object Unificator {
     }
   }
 
+  /**
+    * Unify the lhs and rhs of an expression E, as defined by the Term Rewriting book.
+    * This either throws an UnificationException or returns an MGU.
+    * @param t1 first term
+    * @param t2 second term
+    * @return a substitution that transform t1 into t2
+    */
   def unify(t1: Term, t2: Term): Substitution = solve(List[(Term, Term)]((t1, t2)), Set())
 }
 
