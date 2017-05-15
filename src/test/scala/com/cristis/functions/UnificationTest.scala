@@ -1,6 +1,6 @@
 package com.cristis.functions
 
-import com.cristis.unification.Unifier
+import com.cristis.unification.{UnificationException, Unifier}
 import org.scalatest.{Matchers, WordSpec}
 
 /**
@@ -16,6 +16,12 @@ class UnificationTest extends WordSpec with Matchers {
         val res = Unifier.unify(lhs, rhs)
 
         res shouldBe Set(Var("x") -> Fct("f", List(Var("a"))))
+      }
+      "throw an exception if it can't find an mgu" in {
+        val lhs = Fct("f", List(Var("x")))
+        val rhs = Fct("g", List(Var("y")))
+
+        intercept[UnificationException] { Unifier.unify(lhs, rhs) }
       }
     }
   }
