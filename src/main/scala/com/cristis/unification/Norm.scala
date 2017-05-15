@@ -11,7 +11,7 @@ import scala.util.{Failure, Success, Try}
 object Norm {
 
   @tailrec
-  private final def rewrite(ts: List[(Term, Term)], t: Term): Term = ts match {
+  private final def rewrite(trs: List[(Term, Term)], t: Term): Term = trs match {
     case Nil => throw new NormException
     case ((l, r) :: rest) => Try { Substitutions.lift(Unifier.matchfunc(l, r), r) } match {
       case Success(res) => res
@@ -19,11 +19,11 @@ object Norm {
     }
   }
 
-  def norm(ts: List[(Term, Term)], t: Term): Term = t match {
+  def norm(trs: List[(Term, Term)], t: Term): Term = t match {
     case x: Var => x
     case Fct(f, children) =>
-      val u = Fct(f, children.map(child => norm(ts, child)))
-      Try { norm(ts, rewrite(ts, u)) } match {
+      val u = Fct(f, children.map(child => norm(trs, child)))
+      Try { norm(trs, rewrite(trs, u)) } match {
         case Success(res) => res
         case Failure(_) => u
       }
