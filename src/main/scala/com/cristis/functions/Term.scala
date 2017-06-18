@@ -12,7 +12,7 @@ abstract class Term {
 
   def pos(prev: String = ""): Set[String] = {
     this match {
-      case Var(_) => Set(prev)
+      case Var(_, _) => Set(prev)
       case Fct(_, Nil) => Set(prev)
       case Fct(_, children) => children.zipWithIndex.map(s => (s._1, s._2 + 1)).map {
         case (c, i) =>
@@ -27,7 +27,7 @@ abstract class Term {
   final def subterm(p: String): Term = p match {
     case "" => this
     case str => this match {
-      case Var(_) => throw new IllegalArgumentException("Invalid position")
+      case Var(_, _) => throw new IllegalArgumentException("Invalid position")
       case Fct(_, Nil) => throw new IllegalArgumentException("Invalid position")
       case Fct(_, children) => children(str.take(1).toInt - 1).subterm(str.tail)
 
@@ -38,7 +38,7 @@ abstract class Term {
     case "" => t
     case str => this match {
       case Fct(_, Nil) => throw new IllegalArgumentException("Invalid position")
-      case Var(_) => throw new IllegalArgumentException("Invalid position")
+      case Var(_, _) => throw new IllegalArgumentException("Invalid position")
       case Fct(symbol, children) =>
         val childPos = str.take(1).toInt - 1
         val toChange = children(childPos)
@@ -60,13 +60,13 @@ abstract class Term {
   def same(other: Term): Boolean = this == other
 
   def occurs(x: Var): Boolean = this match {
-    case Var(y) => x.symbol == y
+    case Var(y, _) => x.symbol == y
     case Fct(_, ts) => ts.exists(t => t.occurs(x))
   }
 }
 
 case class Fct(symbol: String, children: List[Term] = List()) extends Term
-case class Var(symbol: String) extends Term
+case class Var(symbol: String, index: Int = 0) extends Term
 class TermBuilder(expr: String, lang: Language) {
 
 }

@@ -64,21 +64,26 @@ class LanguageTest extends WordSpec with Matchers {
 
   "LanguageTest.build" when {
     "building just a variable expression" should {
-      val lang = new Language(constants, testFunctions)
       "give the variable" in {
+        val lang = new Language(constants, testFunctions)
+
         val exp = Var("x")
         lang.build("x") shouldBe exp
       }
       "give a function symbol" in {
-        lang.build("f(x,y)") shouldBe Fct("f", List(Var("x"), Var("y")))
+        val lang = new Language(constants, testFunctions)
+        lang.build("f(x,y)") shouldBe Fct("f", List(Var("x", 0), Var("y", 1)))
       }
       "give the correct constant" in {
+        val lang = new Language(constants, testFunctions)
         lang.build("a") shouldBe Fct("a")
       }
       "give a more complicated result" in {
-        lang.build("f(x,f(g(y),z))") shouldBe Fct("f", List(Var("x"), Fct("f", List(Fct("g", List(Var("y"))), Var("z")))))
+        val lang = new Language(constants, testFunctions)
+        lang.build("f(x,f(g(y),z))") shouldBe Fct("f", List(Var("x", 0), Fct("f", List(Fct("g", List(Var("y", 1))), Var("z", 2)))))
       }
       "give more complicated result v2" in {
+        val lang = new Language(constants, testFunctions)
         lang.build("f(f(g(b), g(0)), f(0,b))".replaceAll(" ", "")) shouldBe
           Fct("f",
             List(Fct("f",
@@ -89,4 +94,3 @@ class LanguageTest extends WordSpec with Matchers {
     }
   }
 }
-

@@ -6,6 +6,7 @@ import com.cristis.Constants
   * Created by cristian.schuszter on 2017-03-20.
   */
 class Language(constants: List[String], functions: List[(String, Int)]) {
+  var index = -1
 
   def validateInput(cmdLine: String): Boolean = {
     functions.find(f => cmdLine.startsWith(f._1)) match {
@@ -71,10 +72,11 @@ class Language(constants: List[String], functions: List[(String, Int)]) {
         val functionArguments = getTopLevelArgs(trimmedCmdLine)
         Fct(name, functionArguments.map(build))
       case None =>
-        if(constants.contains(cmdLine)) {
+        if (constants.contains(cmdLine)) {
           Fct(cmdLine)
         } else {
-          Var(cmdLine)
+          index += 1
+          Var(cmdLine, index)
         }
     }
   }

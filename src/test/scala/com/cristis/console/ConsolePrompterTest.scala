@@ -25,7 +25,7 @@ class ConsolePrompterTest extends WordSpec with Matchers  {
         overrideStdInAndOut("a\n\n")
         val results = constantsPrompter.read()
         results.length shouldBe 1
-        results(0) shouldBe "a"
+        results.head shouldBe "a"
       }
     }
     "reading multiple options" should {
@@ -33,14 +33,14 @@ class ConsolePrompterTest extends WordSpec with Matchers  {
         overrideStdInAndOut("a\nbc\n\n")
         val results = constantsPrompter.read()
         results.length shouldBe 2
-        results(0) shouldBe "bc"
+        results.head shouldBe "bc"
         results(1) shouldBe "a"
       }
       "skip the invalid ones" in {
         overrideStdInAndOut("a\nnonsense++\nmorecrap_\nbc\n\n")
         val results = constantsPrompter.read()
         results.length shouldBe 2
-        results(0) shouldBe "bc"
+        results.head shouldBe "bc"
         results(1) shouldBe "a"
       }
     }
@@ -59,7 +59,7 @@ class ConsolePrompterTest extends WordSpec with Matchers  {
         overrideStdInAndOut("a \n\n")
         val results = constantsPrompter.read()
         results.length shouldBe 1
-        results(0) shouldBe "a"
+        results.head shouldBe "a"
       }
     }
     "validating function symbols" should {
@@ -67,13 +67,13 @@ class ConsolePrompterTest extends WordSpec with Matchers  {
         overrideStdInAndOut("f/3\nbc\n\n")
         val results = functionPrompter.read()
         results.length shouldBe 1
-        results(0) shouldBe "f/3"
+        results.head shouldBe "f/3"
       }
       "invalidate wrong arity functions" in {
         overrideStdInAndOut("f/3\nbc/0\nbc/19\n\n")
         val results = functionPrompter.read()
         results.length shouldBe 1
-        results(0) shouldBe "f/3"
+        results.head shouldBe "f/3"
       }
       "invalidate illegal character functions" in {
         overrideStdInAndOut("f*_/3\nbc/0\nbc_/9\n\n")
