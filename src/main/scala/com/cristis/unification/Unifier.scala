@@ -1,5 +1,6 @@
 package com.cristis.unification
 
+import com.cristis.TermRewritingSystem.TRS
 import com.cristis.functions.Substitutions.Substitution
 import com.cristis.functions._
 
@@ -11,7 +12,7 @@ import scala.annotation.tailrec
 object Unifier {
 
   @tailrec
-  private final def solve(ts: List[(Term, Term)], s: Substitution): Substitution = ts match {
+  private final def solve(ts: TRS, s: Substitution): Substitution = ts match {
     case Nil => s
     case (x: Var, t: Term) :: rest => if (x == t) solve(rest, s) else elim(x, t, rest, s)
     case (t: Term, x: Var) :: rest => if (x == t) solve(rest, s) else elim(x, t, rest, s)
@@ -19,7 +20,7 @@ object Unifier {
   }
 
   @tailrec
-  private final def matchs(ts: List[(Term, Term)], s: Substitution): Substitution = ts match {
+  private final def matchs(ts: TRS, s: Substitution): Substitution = ts match {
     case Nil => s
     case (x: Var, t: Term) :: rest => if (Substitutions.indom(x, s) && Substitutions.app(x, s) == t) matchs(rest, s) else throw new UnificationException
     case (_: Term, _: Var) :: _ => throw new UnificationException
@@ -28,7 +29,7 @@ object Unifier {
 
   }
 
-  private def elim(x: Var, t: Term, toSolve: List[(Term, Term)], subst: Substitution): Substitution = {
+  private def elim(x: Var, t: Term, toSolve: TRS, subst: Substitution): Substitution = {
     if (t.occurs(x)) {
       throw new UnificationException
     }
