@@ -3,8 +3,8 @@ package com.cristis.functions
 import com.cristis.Constants
 
 /**
- * Created by cristian.schuszter on 2017-03-20.
- */
+  * Created by cristian.schuszter on 2017-03-20.
+  */
 class Language(constants: List[String], functions: List[(String, Int)]) {
 
   def validateInput(cmdLine: String): Boolean = {
@@ -60,4 +60,25 @@ class Language(constants: List[String], functions: List[(String, Int)]) {
       res :+ cmd.substring(if (previousCommaIndex == 0) previousCommaIndex else previousCommaIndex + 1)
     }
   }
+
+  def build(cmdLine: String): Term = {
+    if (!validateInput(cmdLine))
+      throw new ValidationException
+    functions.find(f => cmdLine.startsWith(f._1)) match {
+      case Some((name, arity)) =>
+        val withoutNameCmdLine = cmdLine.substring(name.length)
+        val trimmedCmdLine = withoutNameCmdLine.substring(1, withoutNameCmdLine.lastIndexOf(')'))
+        val functionArguments = getTopLevelArgs(trimmedCmdLine)
+        Fct(name, functionArguments.map(build))
+      case None =>
+        if(constants.contains(cmdLine)) {
+          Fct(cmdLine)
+        } else {
+          Var(cmdLine)
+        }
+    }
+  }
+
+  class ValidationException extends Exception
+
 }
