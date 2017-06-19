@@ -16,6 +16,7 @@ class CriticalPairTest extends WordSpec with Matchers {
   "CriticalPair.computeCriticalPair" when {
     "running on a simple example" should {
       "do something" in {
+        // 6.2 in book, at the examples
         val testTrs: TRS = List(
         Fct("f", List(Fct("f", List(Var("x"), Var("y"))), Var("z"))) -> Fct("f", List(Var("x"), Fct("f", List(Var("y"), Var("z"))))),
         Fct("f", List(Fct("i", List(Var("x", 1))), Var("x", 1))) -> Fct("e")
