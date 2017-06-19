@@ -31,7 +31,6 @@ class UnificationTest extends WordSpec with Matchers {
 
       val uniResult = Unifier.unify(left, right)
       uniResult shouldBe Set((Var("y",0),Var("x",1)), (Var("x",0),Fct("i",List(Var("x",1)))))
-      println(uniResult)
     }
   }
 }

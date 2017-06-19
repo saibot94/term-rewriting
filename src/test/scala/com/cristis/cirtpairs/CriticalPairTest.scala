@@ -17,10 +17,9 @@ class CriticalPairTest extends WordSpec with Matchers {
     "running on a simple example" should {
       "do something" in {
         val testTrs: TRS = List(
-          lang.build("f(f(x,y),z)") -> lang.build("f(x,f(y,z))"),
-          lang.build("f(i(x),x)") -> lang.build("e")
+        Fct("f", List(Fct("f", List(Var("x"), Var("y"))), Var("z"))) -> Fct("f", List(Var("x"), Fct("f", List(Var("y"), Var("z"))))),
+        Fct("f", List(Fct("i", List(Var("x", 1))), Var("x", 1))) -> Fct("e")
         )
-        println(testTrs)
         val critPairs = CriticalPair.criticalPairs(testTrs)
         critPairs.foreach(println)
       }
