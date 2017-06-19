@@ -24,5 +24,14 @@ class UnificationTest extends WordSpec with Matchers {
         intercept[UnificationException] { Unifier.unify(lhs, rhs) }
       }
     }
+
+    "unifying something more complicated" in {
+      val left = Fct("f", List(Var("x"), Var("y")))
+      val right = Fct("f", List(Fct("i", List(Var("x", 1))), Var("x", 1)))
+
+      val uniResult = Unifier.unify(left, right)
+      uniResult shouldBe Set((Var("y",0),Var("x",1)), (Var("x",0),Fct("i",List(Var("x",1)))))
+      println(uniResult)
+    }
   }
 }

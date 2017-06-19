@@ -16,13 +16,21 @@ object Unifier {
     case Nil => s
     case (x: Var, t: Term) :: rest => if (x == t) solve(rest, s) else elim(x, t, rest, s)
     case (t: Term, x: Var) :: rest => if (x == t) solve(rest, s) else elim(x, t, rest, s)
-    case (f: Fct, g: Fct) :: _ => if (f.symbol == g.symbol) solve(f.children.zip(g.children) ::: ts, s) else throw new UnificationException
+    case (f: Fct, g: Fct) :: rest => if (f.symbol == g.symbol) solve(f.children.zip(g.children) ::: rest, s) else throw new UnificationException
   }
 
   @tailrec
   private final def matchs(ts: TRS, s: Substitution): Substitution = ts match {
     case Nil => s
-    case (x: Var, t: Term) :: rest => if (Substitutions.indom(x, s) && Substitutions.app(x, s) == t) matchs(rest, s) else throw new UnificationException
+    case (x: Var, t: Term) :: rest =>
+      if (Substitutions.indom(x, s)) {
+        if (Substitutions.app(x, s) == t) {
+          matchs(rest, s)
+        }
+        else throw new UnificationException
+      } else {
+        matchs(rest, Set((x, t)) | s)
+      }
     case (_: Term, _: Var) :: _ => throw new UnificationException
     case (t1: Fct, t2: Fct) :: rest =>
       if (t1.symbol == t2.symbol) matchs(t1.children.zip(t2.children) ::: rest, s) else throw new UnificationException
@@ -53,8 +61,9 @@ object Unifier {
 
   /**
     * Pattern match the lhs with the rhs
+    *
     * @param pattern the lhs that we want to match to the rhs
-    * @param obj the rhs
+    * @param obj     the rhs
     * @return a fitting substitution or throws UnificationException if nothing can be found
     */
   def matchfunc(pattern: Term, obj: Term): Substitution = matchs(List((pattern, obj)), Set())

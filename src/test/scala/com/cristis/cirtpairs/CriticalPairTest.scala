@@ -22,7 +22,7 @@ class CriticalPairTest extends WordSpec with Matchers {
         )
         println(testTrs)
         val critPairs = CriticalPair.criticalPairs(testTrs)
-        println(critPairs)
+        critPairs.foreach(println)
       }
     }
   }

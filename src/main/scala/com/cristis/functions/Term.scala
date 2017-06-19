@@ -60,7 +60,7 @@ abstract class Term {
   def same(other: Term): Boolean = this == other
 
   def occurs(x: Var): Boolean = this match {
-    case Var(y, _) => x.symbol == y
+    case y: Var => x == y
     case Fct(_, ts) => ts.exists(t => t.occurs(x))
   }
 }
