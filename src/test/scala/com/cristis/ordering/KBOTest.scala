@@ -4,9 +4,9 @@ import com.cristis.functions.{Fct, Var}
 import org.scalatest.{Matchers, WordSpec}
 
 /**
-  * Created by chris on 6/17/2017.
+  * Created by chris on 6/19/2017.
   */
-class LPOTest extends WordSpec with Matchers {
+class KBOTest extends WordSpec with Matchers {
 
   // i > f > e
   val ordering: List[String] = List("i", "f", "e")
@@ -25,11 +25,6 @@ class LPOTest extends WordSpec with Matchers {
 
   "LexicographicPathOrdering.computeLpo" when {
     "comparing a term and a var" should {
-      "test ordering" in {
-        fctOrdering("i", "f") shouldBe GR
-        fctOrdering("i", "i") shouldBe EQ
-        fctOrdering("e", "f") shouldBe NGE
-      }
       "compute correctly LPO1" in {
         val larger = Fct("f", List(Var("x"), Fct("e")))
         val smaller = Var("x")
@@ -59,5 +54,4 @@ class LPOTest extends WordSpec with Matchers {
       }
     }
   }
-
 }
