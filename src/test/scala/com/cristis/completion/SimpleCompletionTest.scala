@@ -26,27 +26,27 @@ class SimpleCompletionTest extends WordSpec with Matchers {
         println(completionObj.solve)
       }
     }
-//
-//    "trying to solve the book example" should {
-//      "return the needed things" in {
-//        val orderings = List("i", "*", "1").permutations.toList
-//        orderings.foreach { ord =>
-//          println(s"Trying order: $ord")
-//          val completionObj = new SimpleCompletion(ord, equalities)
-//          try {
-//            println(completionObj.solve)
-//            println(s"System solvable for $ord")
-//          } catch  {
-//            case e: Exception =>
-//              println(s"$e")
-//          }
-//
-//        }
-//
-////        val orderings = List("i", "*", "1")
-////        val completionObj = new SimpleCompletion(orderings, equalities)
-////        println(completionObj.solve)
-//      }
-//    }
+
+    "trying to solve the book example" should {
+      "return the needed things" in {
+        val orderings = List("i", "*", "1").permutations.toList
+        orderings.foreach { ord =>
+          println(s"Trying order: $ord")
+          val completionObj = new SimpleCompletion(ord, equalities)
+          try {
+            println(completionObj.solve)
+            println(s"System solvable for $ord")
+          } catch  {
+            case e: Exception =>
+              println(s"$e")
+          }
+
+        }
+
+//        val orderings = List("i", "*", "1")
+//        val completionObj = new SimpleCompletion(orderings, equalities)
+//        println(completionObj.solve)
+      }
+    }
   }
 }

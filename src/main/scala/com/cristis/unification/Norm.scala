@@ -14,7 +14,7 @@ object Norm {
   @tailrec
   private final def rewrite(trs: TRS, t: Term): Term = trs match {
     case Nil => throw new NormException
-    case ((l, r) :: rest) => Try { Substitutions.lift(Unifier.matchfunc(l, r), r) } match {
+    case ((l, r) :: rest) => Try { Substitutions.lift(Unifier.matchfunc(l, t), r) } match {
       case Success(res) => res
       case Failure(_) => rewrite(rest, t)
     }

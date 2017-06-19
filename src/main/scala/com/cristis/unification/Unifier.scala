@@ -29,7 +29,7 @@ object Unifier {
         }
         else throw new UnificationException
       } else {
-        matchs(rest, Set((x, t)) | s)
+        matchs(rest, Set((x, t)) ++ s)
       }
     case (_: Term, _: Var) :: _ => throw new UnificationException
     case (t1: Fct, t2: Fct) :: rest =>
@@ -44,7 +44,7 @@ object Unifier {
     else {
       val xt: Substitution = Set((x, t))
       val mappedToSolve = toSolve.map { case (t1, t2) => (Substitutions.lift(xt, t1), Substitutions.lift(xt, t2)) }
-      val newSubst: Substitution = xt | subst.map { case (y, u) => (y, Substitutions.lift(xt, u)) }
+      val newSubst: Substitution = xt ++ subst.map { case (y, u) => (y, Substitutions.lift(xt, u)) }
       solve(mappedToSolve, newSubst)
     }
   }

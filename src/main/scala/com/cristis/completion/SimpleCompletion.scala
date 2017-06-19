@@ -4,20 +4,26 @@ import com.cristis.TermRewritingSystem.TRS
 import com.cristis.critpairs.CriticalPair
 import com.cristis.functions.{Substitutions, Term}
 import com.cristis.ordering._
-import com.cristis.unification.Norm
+import com.cristis.unification.{Norm, Unifier}
+
+import scala.util.{Success, Try}
 
 /**
   * Created by cristian.schuszter on 6/19/2017.
   */
 class SimpleCompletion(ordering: List[String], equalities: List[(Term, Term)]) {
+
   import LexicographicPathOrdering._
+
+  var oldR: TRS = null
+  var newR: TRS = null
 
   private def orderingFunc(s1: String, s2: String): Order = {
     val ord1 = ordering.indexOf(s1)
     val ord2 = ordering.indexOf(s2)
-    if(ord1 == ord2) {
+    if (ord1 == ord2) {
       EQ
-    } else if(ord1 > ord2) {
+    } else if (ord1 > ord2) {
       NGE
     } else {
       GR
@@ -26,12 +32,12 @@ class SimpleCompletion(ordering: List[String], equalities: List[(Term, Term)]) {
 
   def validate: Boolean = {
     equalities.forall { case (left, right) =>
-      if(left == right) {
+      if (left == right) {
         true
       } else {
-        val canOrder = (computeLpo(orderingFunc, left, right) == GR) ||
-            (computeLpo(orderingFunc, right, left) == GR)
-        if(!canOrder) {
+        val canOrder = (computeLpo(orderingFunc)(left, right) == GR) ||
+          (computeLpo(orderingFunc)(right, left) == GR)
+        if (!canOrder) {
           throw new CompletionException(s"Unable to validate initial system! Cannot orient $left and $right from E")
         }
         canOrder
@@ -48,24 +54,33 @@ class SimpleCompletion(ordering: List[String], equalities: List[(Term, Term)]) {
 
 
   def solve: TRS = {
-    if(!validate) {
+    if (!validate) {
       throw new CompletionException(s"Unable to validate initial system! Validation procedure returned false")
     }
-    var oldR = buildInitialTrs
-    var newR: TRS = null
+    oldR = buildInitialTrs
+    newR = null
     while (oldR != newR) {
-      if(newR == null) {
+      if (newR == null) {
         newR = oldR
       }
       oldR = newR
       println("oldr: " + oldR)
       val critPairs = CriticalPair.criticalPairs(oldR)
       // Normalize all of the s, ts from the resulting rules
-      val normalizedCritPairs = critPairs.filterNot { case (left, right) => left == right }.distinct.map {
+      val normalizedCritPairs = critPairs.map {
         case (left, right) =>
           (Norm.norm(newR, left), Norm.norm(newR, right))
+        }
+        .filterNot { case (left, right) =>
+        Try {
+          Substitutions.lift(Unifier.unify(left, right), left) == right
+        } match {
+          case Success(un) => un
+          case _ => false
+        }
       }.filterNot { case (left, right) => left == right }.distinct
 
+      println("hello, world")
       // Orient the crit pairs and add them to the new set
       val orientedPairs = normalizedCritPairs.map {
         case (left, right) =>
@@ -83,9 +98,9 @@ class SimpleCompletion(ordering: List[String], equalities: List[(Term, Term)]) {
 
 
   private def orientTerms(left: Term, right: Term) = {
-    if (computeLpo(orderingFunc, left, right) == GR) {
+    if (computeLpo(orderingFunc)(left, right) == GR) {
       (left, right)
-    } else if (computeLpo(orderingFunc, right, left) == GR) {
+    } else if (computeLpo(orderingFunc)(right, left) == GR) {
       (right, left)
     } else {
       throw new CompletionException(s"Unable to validate initial system! Cannot orient $left and $right from E")
@@ -93,4 +108,5 @@ class SimpleCompletion(ordering: List[String], equalities: List[(Term, Term)]) {
   }
 
   class CompletionException(message: String) extends Exception(message)
+
 }
