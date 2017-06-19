@@ -16,11 +16,11 @@ object CriticalPair {
     criticalPairs2(trs, trs)
   }
 
-  def criticalPairs2(r1: TRS, r2: TRS): List[(Term, Term)] = {
+  private def criticalPairs2(r1: TRS, r2: TRS): List[(Term, Term)] = {
     r2.map(r => computeCps(r1, r)).reduceLeft(_ ::: _)
   }
 
-  def computeOnePair(context: Term => Term,
+  private def computeOnePair(context: Term => Term,
                      pair1: (Term, Term),
                      pair2: (Term, Term)): List[(Term, Term)] = {
     import Substitutions._
@@ -33,7 +33,7 @@ object CriticalPair {
     }
   }
 
-  def computeCps(rewriteSystem: TRS,  pair: (Term, Term)): List[(Term, Term)] = {
+  private def computeCps(rewriteSystem: TRS,  pair: (Term, Term)): List[(Term, Term)] = {
 
     def cps(context: Term => Term, pair: (Term, Term)): List[(Term, Term)] =
       pair match {

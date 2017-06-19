@@ -63,6 +63,17 @@ abstract class Term {
     case y: Var => x == y
     case Fct(_, ts) => ts.exists(t => t.occurs(x))
   }
+
+  override def toString: String = this match {
+    case Var(x, i) => x + i.toString
+    case Fct(f, Nil) => f
+    case Fct(f, ts) =>
+//      if(ts.length == 2) {
+//        "(" + ts.head.toString + f + ts.tail.head.toString + ")"
+//      } else {
+        f + "(" + ts.map(t => t.toString).mkString(",") + ")"
+//      }
+  }
 }
 
 case class Fct(symbol: String, children: List[Term] = List()) extends Term
