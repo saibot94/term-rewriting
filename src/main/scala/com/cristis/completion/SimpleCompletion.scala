@@ -59,12 +59,12 @@ class SimpleCompletion(ordering: List[String], equalities: List[(Term, Term)]) {
     }
     oldR = buildInitialTrs
     newR = null
+    var i = 1
     while (oldR != newR) {
       if (newR == null) {
         newR = oldR
       }
       oldR = newR
-      println("oldr: " + oldR)
       val critPairs = CriticalPair.criticalPairs(oldR)
       // Normalize all of the s, ts from the resulting rules
       val normalizedCritPairs = critPairs.map {
@@ -87,7 +87,8 @@ class SimpleCompletion(ordering: List[String], equalities: List[(Term, Term)]) {
           orientTerms(left, right)
       }
       newR = oldR ::: orientedPairs
-      println("system after step: ")
+      println(s"system after step $i: ")
+      i+=1
       newR.foreach {
         case (left, right) =>
           println(left + " -> " + right)
@@ -103,7 +104,7 @@ class SimpleCompletion(ordering: List[String], equalities: List[(Term, Term)]) {
     } else if (computeLpo(orderingFunc)(right, left) == GR) {
       (right, left)
     } else {
-      throw new CompletionException(s"Unable to validate initial system! Cannot orient $left and $right from E")
+      throw new CompletionException(s"Cannot orient $left and $right from E")
     }
   }
 

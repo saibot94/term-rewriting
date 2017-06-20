@@ -26,7 +26,7 @@ object Main {
       val spl = s.split("/")
       (spl(0), spl(1).toInt)
     })
-    println(s"Please insert an ordering for the function symbols defined above [${functions.mkString(",")}] \nExample: *,i,1. This will mean * > i > 1")
+    println(s"Please insert an ordering for the function symbols defined above [${(functionsMapped.map(_._1) ++ constants).mkString(",")}] \nExample: *,i,1. This will mean * > i > 1")
     println("************\n")
     print(">> ")
     Console.flush
