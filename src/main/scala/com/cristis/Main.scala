@@ -1,6 +1,8 @@
 package com.cristis
 
 import com.cristis.Constants._
+import com.cristis.TermRewritingSystem.TRS
+import com.cristis.completion.SimpleCompletion
 import com.cristis.console.ConsolePrompter
 import com.cristis.functions.Language
 
@@ -24,24 +26,41 @@ object Main {
       val spl = s.split("/")
       (spl(0), spl(1).toInt)
     })
+    println(s"Please insert an ordering for the function symbols defined above [${functions.mkString(",")}] \nExample: *,i,1. This will mean * > i > 1")
+    println("************\n")
+    print(">> ")
+    Console.flush
+    val ordering = StdIn.readLine().trim.split(",").map(_.trim).toList
 
     println("\n")
     clearScreen()
     println(s"The following constants have been entered: ${constants.mkString(" | ")}")
     println(s"The following function symbols have been entered: ${functions.mkString(" | ")}")
-    println("Enter a valid expression in the language that you've defined above." +
-      "\nExample: f(g(1,2), 0)\n******")
+
     while (true) {
+      println("Please insert a file path containing the initial system E for it to be solved")
+      println("************\n")
       print(">> ")
       Console.flush
+      val fileName = StdIn.readLine().trim
       val language = new Language(constants, functionsMapped)
-      val input = StdIn.readLine().replaceAll(" ", "")
-      if (language.validateInput(input)) {
-        println("The expression was valid!")
-      } else {
-        println("ERROR: Could not validate the expression!")
-      }
+      val initialTRS: TRS = language.parseEquationsFile(fileName)
       println("\n")
+      println("******* INITIAL TRS: ")
+      initialTRS.foreach(println)
+      println("\n")
+      println("******* Solving with simple completion: ")
+      ordering.permutations.foreach { ord =>
+        println(s"Trying order: $ord")
+        val completionObj = new SimpleCompletion(ord, initialTRS)
+        try {
+          println(completionObj.solve)
+          println(s"System solvable for $ord")
+        } catch {
+          case e: Exception =>
+            println(s"Error solving system for $ord: [ $e ]")
+        }
+      }
     }
   }
 }
