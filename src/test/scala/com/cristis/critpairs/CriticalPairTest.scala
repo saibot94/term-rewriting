@@ -1,4 +1,4 @@
-package com.cristis.cirtpairs
+package com.cristis.critpairs
 
 import com.cristis.TermRewritingSystem.TRS
 import com.cristis.critpairs.CriticalPair

@@ -69,18 +69,18 @@ class SimpleCompletion(ordering: List[String], equalities: List[(Term, Term)]) {
       // Normalize all of the s, ts from the resulting rules
       val normalizedCritPairs = critPairs.map {
         case (left, right) =>
-          (Norm.norm(newR, left), Norm.norm(newR, right))
+          (Norm.norm(oldR, left), Norm.norm(oldR, right))
         }
         .filterNot { case (left, right) =>
-        Try {
-          Substitutions.lift(Unifier.unify(left, right), left) == right
-        } match {
-          case Success(un) => un
-          case _ => false
+          Try {
+            Substitutions.lift(Unifier.unify(left, right), left) == right
+          } match {
+            case Success(un) => un
+            case _ => false
+          }
         }
-      }.filterNot { case (left, right) => left == right }.distinct
+      .filterNot { case (left, right) => left == right }.distinct
 
-      println("hello, world")
       // Orient the crit pairs and add them to the new set
       val orientedPairs = normalizedCritPairs.map {
         case (left, right) =>
